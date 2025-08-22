@@ -42,7 +42,6 @@ local finished = false
 
 task.spawn(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/somethingsimade/CurrentAngleV4/refs/heads/main/currentanglev2.5.lua"))()
-    loadstring(game:HttpGet("https://github.com/DahGuest/Chips-use-a-reanimate-FIXED-VERSION-/edit/main/chips"))()
 end)
 
 repeat task.wait() until finished
@@ -56,3 +55,4 @@ repeat task.wait() until finished
 -- yield is if the fling function will yield
 
 -- you can put your converted script under here
+loadstring(game:HttpGet("https://github.com/DahGuest/Chips-use-a-reanimate-FIXED-VERSION-/edit/main/chips"))()
