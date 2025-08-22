@@ -31,4 +31,5 @@
 		--// Settings end
 	
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/somethingsimade/CurrentAngleV4/refs/heads/main/currentanglev2.5.lua"))()
+wait(game.Players.RespawnTime + 0.3)
 		loadstring(game:HttpGet("https://github.com/DahGuest/Chips-use-a-reanimate-FIXED-VERSION-/edit/main/chips"))()
