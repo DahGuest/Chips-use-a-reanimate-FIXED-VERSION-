@@ -17,7 +17,7 @@
 		settings["Respawn character"] = true
 		settings["Instant respawn"] = true
 		settings["Hide HumanoidRootPart"] = false
-		settings["PermaDeath fake character"] = true
+		settings["PermaDeath fake character"] = false
 		settings["R15 Reanimate"] = false
 		settings["Click Fling"] = true
 		settings["Hide RootPart Distance"] = CFrame.new(255, 255, 0)
