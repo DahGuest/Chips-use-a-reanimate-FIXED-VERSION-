@@ -11,10 +11,11 @@
 
 wait(1 / 60)
 
+
 local plr = game.Players.LocalPlayer
-local mouse = plr:GetMouse()
 local char = plr.Character
 local hum = char:FindFirstChildOfClass'Humanoid'
+local mouse = plr:GetMouse()
 local hed = char.Head
 local root = char:FindFirstChild'HumanoidRootPart'
 local rootj = root.RootJoint
@@ -82,6 +83,46 @@ newWeld(tors, ll, -0.5, -1, 0)
 ll.Weld.C1 = CFrame.new(0, 1, 0)
 newWeld(tors, rl, 0.5, -1, 0)
 rl.Weld.C1 = CFrame.new(0, 1, 0)
+-------------------------------------------------------
+--Start HeartBeat--
+-------------------------------------------------------
+ArtificialHB = Instance.new("BindableEvent", script)
+ArtificialHB.Name = "Heartbeat"
+script:WaitForChild("Heartbeat")
+
+frame = 1 / 60
+tf = 0
+allowframeloss = false
+tossremainder = false
+
+
+lastframe = tick()
+script.Heartbeat:Fire()
+
+
+game:GetService("RunService").Heartbeat:connect(function(s, p)
+	tf = tf + s
+	if tf >= frame then
+		if allowframeloss then
+			script.Heartbeat:Fire()
+			lastframe = tick()
+		else
+			for i = 1, math.floor(tf / frame) do
+				script.Heartbeat:Fire()
+			end
+			lastframe = tick()
+		end
+		if tossremainder then
+			tf = 0
+		else
+			tf = tf - frame * math.floor(tf / frame)
+		end
+	end
+end)
+-------------------------------------------------------
+--End HeartBeat--
+-------------------------------------------------------
+
 -------------------------------------------------------
 --Start Important Functions--
 -------------------------------------------------------
@@ -177,12 +218,162 @@ end
 function rayCast(Position, Direction, Range, Ignore)
 	return game:service("Workspace"):FindPartOnRay(Ray.new(Position, Direction.unit * (Range or 999.999)), Ignore)
 end
+local RbxUtility = LoadLibrary("RbxUtility")
+local Create = RbxUtility.Create
 
 -------------------------------------------------------
 --Start Damage Function--
 -------------------------------------------------------
 function Damage(Part, hit, minim, maxim, knockback, Type, Property, Delay, HitSound, HitPitch)
-	return true
+	if hit.Parent == nil then
+		return
+	end
+	local h = hit.Parent:FindFirstChildOfClass("Humanoid")
+	for _, v in pairs(hit.Parent:children()) do
+		if v:IsA("Humanoid") then
+			h = v
+		end
+	end
+         if h ~= nil and hit.Parent.Name ~= char.Name and hit.Parent:FindFirstChild("UpperTorso") ~= nil then
+	
+         hit.Parent:FindFirstChild("Head"):BreakJoints()
+         end
+
+	if h ~= nil and hit.Parent.Name ~= char.Name and hit.Parent:FindFirstChild("Torso") ~= nil then
+		if hit.Parent:findFirstChild("DebounceHit") ~= nil then
+			if hit.Parent.DebounceHit.Value == true then
+				return
+			end
+		end
+         if insta == true then
+         hit.Parent:FindFirstChild("Head"):BreakJoints()
+         end
+		local c = Create("ObjectValue"){
+			Name = "creator",
+			Value = game:service("Players").LocalPlayer,
+			Parent = h,
+		}
+		game:GetService("Debris"):AddItem(c, .5)
+		if HitSound ~= nil and HitPitch ~= nil then
+			CFuncs.Sound.Create(HitSound, hit, 1, HitPitch) 
+		end
+		local Damage = math.random(minim, maxim)
+		local blocked = false
+		local block = hit.Parent:findFirstChild("Block")
+		if block ~= nil then
+			if block.className == "IntValue" then
+				if block.Value > 0 then
+					blocked = true
+					block.Value = block.Value - 1
+					print(block.Value)
+				end
+			end
+		end
+		if blocked == false then
+			h.Health = h.Health - Damage
+			ShowDamage((Part.CFrame * CFrame.new(0, 0, (Part.Size.Z / 2)).p + Vector3.new(0, 1.5, 0)), -Damage, 1.5, tors.BrickColor.Color)
+		else
+			h.Health = h.Health - (Damage / 2)
+			ShowDamage((Part.CFrame * CFrame.new(0, 0, (Part.Size.Z / 2)).p + Vector3.new(0, 1.5, 0)), -Damage, 1.5, tors.BrickColor.Color)
+		end
+		if Type == "Knockdown" then
+			local hum = hit.Parent.Humanoid
+			hum.PlatformStand = true
+			coroutine.resume(coroutine.create(function(HHumanoid)
+				swait(1)
+				HHumanoid.PlatformStand = false
+			end), hum)
+			local angle = (hit.Position - (Property.Position + Vector3.new(0, 0, 0))).unit
+			local bodvol = Create("BodyVelocity"){
+				velocity = angle * knockback,
+				P = 5000,
+				maxForce = Vector3.new(8e+003, 8e+003, 8e+003),
+				Parent = hit,
+			}
+			local rl = Create("BodyAngularVelocity"){
+				P = 3000,
+				maxTorque = Vector3.new(500000, 500000, 500000) * 50000000000000,
+				angularvelocity = Vector3.new(math.random(-10, 10), math.random(-10, 10), math.random(-10, 10)),
+				Parent = hit,
+			}
+			game:GetService("Debris"):AddItem(bodvol, .5)
+			game:GetService("Debris"):AddItem(rl, .5)
+		elseif Type == "Normal" then
+			local vp = Create("BodyVelocity"){
+				P = 500,
+				maxForce = Vector3.new(math.huge, 0, math.huge),
+				velocity = Property.CFrame.lookVector * knockback + Property.Velocity / 1.05,
+			}
+			if knockback > 0 then
+				vp.Parent = hit.Parent.Torso
+			end
+			game:GetService("Debris"):AddItem(vp, .5)
+		elseif Type == "Up" then
+			local bodyVelocity = Create("BodyVelocity"){
+				velocity = Vector3.new(0, 20, 0),
+				P = 5000,
+				maxForce = Vector3.new(8e+003, 8e+003, 8e+003),
+				Parent = hit,
+			}
+			game:GetService("Debris"):AddItem(bodyVelocity, .5)
+		elseif Type == "DarkUp" then
+			coroutine.resume(coroutine.create(function()
+				for i = 0, 1, 0.1 do
+					swait()
+					Effects.Block.Create(BrickColor.new("Black"), hit.Parent.Torso.CFrame, 5, 5, 5, 1, 1, 1, .08, 1)
+				end
+			end))
+			local bodyVelocity = Create("BodyVelocity"){
+				velocity = Vector3.new(0, 20, 0),
+				P = 5000,
+				maxForce = Vector3.new(8e+003, 8e+003, 8e+003),
+				Parent = hit,
+			}
+			game:GetService("Debris"):AddItem(bodyVelocity, 1)
+		elseif Type == "Snare" then
+			local bp = Create("BodyPosition"){
+				P = 2000,
+				D = 100,
+				maxForce = Vector3.new(math.huge, math.huge, math.huge),
+				position = hit.Parent.Torso.Position,
+				Parent = hit.Parent.Torso,
+			}
+			game:GetService("Debris"):AddItem(bp, 1)
+		elseif Type == "Freeze" then
+			local BodPos = Create("BodyPosition"){
+				P = 50000,
+				D = 1000,
+				maxForce = Vector3.new(math.huge, math.huge, math.huge),
+				position = hit.Parent.Torso.Position,
+				Parent = hit.Parent.Torso,
+			}
+			local BodGy = Create("BodyGyro") {
+				maxTorque = Vector3.new(4e+005, 4e+005, 4e+005) * math.huge ,
+				P = 20e+003,
+				Parent = hit.Parent.Torso,
+				cframe = hit.Parent.Torso.CFrame,
+			}
+			hit.Parent.Torso.Anchored = true
+			coroutine.resume(coroutine.create(function(Part) 
+				swait(1.5)
+				Part.Anchored = false
+			end), hit.Parent.Torso)
+			game:GetService("Debris"):AddItem(BodPos, 3)
+			game:GetService("Debris"):AddItem(BodGy, 3)
+		end
+		local debounce = Create("BoolValue"){
+			Name = "DebounceHit",
+			Parent = hit.Parent,
+			Value = true,
+		}
+		game:GetService("Debris"):AddItem(debounce, Delay)
+		c = Create("ObjectValue"){
+			Name = "creator",
+			Value = Player,
+			Parent = h,
+		}
+		game:GetService("Debris"):AddItem(c, .5)
+	end
 end
 -------------------------------------------------------
 --End Damage Function--
@@ -1135,7 +1326,16 @@ LH.C1 = CF(-0.5 * Player_Size, 1 * Player_Size, 0 * Player_Size) * angles(Rad(0)
 --hat.Parent = Character
 end
 ----------------------------------------------------------------------------------
-local SONG = 525565668
+--[[SONGS
+]]
+writefile("souljaboy.ogg", game:HttpGet("https://github.com/DahGuest/hi/raw/main/souljaboy.ogg"))
+writefile("cheesesticks.ogg", game:HttpGet("https://github.com/DahGuest/Chips-use-a-reanimate-FIXED-VERSION-/raw/main/remixgodsuede%20feat%20-%20lil%20ron%20ron%20cheese%20sticks%20real%20good%20%5BRipFrom.com%5D.ogg"))
+writefile("whosbeendrawing.ogg", game:HttpGet("https://github.com/DahGuest/Chips-use-a-reanimate-FIXED-VERSION-/raw/main/The%20Nightmare%20Woods%20(Run%20Run%20Rottytops!)%20(Pirate%20Mode)%20-%20Shantae%20and%20the%20Pirates%20Curse%20%5BRipFrom.com%5D.ogg"))
+writefile("dun durn drn.ogg", game:HttpGet("https://github.com/DahGuest/Chips-use-a-reanimate-FIXED-VERSION-/raw/main/Slider%20(Republic%20Mix)%20Super%20Mario%2064%20%5BRipFrom.com%5D.ogg"))
+writefile("space.ogg", game:HttpGet("https://github.com/DahGuest/Chips-use-a-reanimate-FIXED-VERSION-/raw/main/Sega%20CD%20BIOS%202.0%20(US)%20-%20ConsoleBIOS%20Music%20%5BRipFrom.com%5D.ogg"))
+
+
+local SONG = getcustomasset("souljaboy.ogg")
 local SONG2 = 0
 local Music = Instance.new("Sound",tors)
 Music.Volume = 2.5
@@ -1161,7 +1361,6 @@ local Chips = "onebearnakedwoman"
 ----------------------------------------------------------------------------------
 hum.JumpPower = 55
 hum.Animator.Parent = nil
-char.Animate.Parent = nil
 ----------------------------------------------------------------------------------
 Chips = IT("Model")
 Chips.Parent = char
@@ -1171,7 +1370,7 @@ RHe.Parent = Chips
 RHe.BrickColor = BrickColor.new("Really black")
 RHe.Locked = true
 RHe.CanCollide = false
-RHe.Transparency = 1
+RHe.Transparency = 0
 PMesh = IT("SpecialMesh")
 RHe.formFactor =  "Symmetric"
 PMesh.MeshType = "FileMesh"
@@ -1184,11 +1383,6 @@ RWeld.Parent = RHe
 RWeld.Part0 = RHe
 RWeld.Part1 = ra
 RWeld.C0 = CF(-1.2, -0.5, 0) * angles(Rad(90), Rad(0), Rad(90))
---[[
-game:GetService("Players").LocalPlayer.Character["Accessory (Meshes/doritosAccessory)"].Handle.att1_Handle.Parent = RHe
-RHe.att1_Handle.Rotation = Vector3.new(-0,0,0)
-RHe.att1_Handle.Position = Vector3.new(0.25,-0.25,0)
-]]--
 -------------------------------------------------------
 --End Customization--
 -------------------------------------------------------
@@ -1303,7 +1497,7 @@ function Taunt()
 			RW.C0 = clerp(RW.C0, CF(1* Player_Size, 0.1* Player_Size, -0.6* Player_Size) * angles(Rad(160), Rad(0), Rad(-35)), 0.1)
 			LW.C0 = clerp(LW.C0, CF(-1.5* Player_Size, 0.5* Player_Size, 0* Player_Size) * angles(Rad(-20), Rad(0), Rad(-10)), 0.3)
 		end
-		local RUN = Cso("957655044", hed, 5, 1)
+		local RUN = Cso("6523472922", hed, 5, 1)
 		swait(2)
 		repeat
 			swait()
@@ -1336,7 +1530,7 @@ end
 function Gum()
 	attack = true
 	Speed = 0
-	local Senses = Cso("605297168", hed, 6, 1)
+	local Senses = Cso("6356170933", hed, 7, 1)
 	swait(2)
 	repeat
 		swait()
@@ -1439,39 +1633,41 @@ end
 -------------------------------------------------------
 --End Attacks N Stuff--
 -------------------------------------------------------
+
+
 mouse.KeyDown:connect(function(key)
 	if attack == false then
 		if key == "t" then
 			Taunt()
 		elseif key == "z" then
-		--	Gum()
+			Gum()
 		elseif key == "x" then
 			OHHHHHHH()
 		elseif key == "c" then
 			WoodyGotWood() 
                 elseif key == "f" then
-			SONG = 690663957
+			SONG = getcustomasset("cheesesticks.ogg")
 			Music.TimePosition = 0
 			PMesh.TextureId = "rbxassetid://206977326"
 	        	Chips = "cheesexd"
 
 		elseif key == "m" then
-			SONG = 525565668
+			SONG = getcustomasset("souljaboy.ogg")
 			Music.TimePosition = 0
 			PMesh.TextureId = "rbxassetid://342435650"
 			Chips = "onebearnakedwoman"
 		elseif key == "n" then
-			SONG = 937445925
+			SONG = getcustomasset("space.ogg")
 			Music.TimePosition = 0
 			PMesh.TextureId = "rbxassetid://342436716"
 			Chips = "layonme"
 		elseif key == "b" then
-			SONG = 1386299751
+			SONG = getcustomasset("whosbeendrawing.ogg") --
 			Music.TimePosition = 0
 			PMesh.TextureId = "rbxassetid://341999291"
 			Chips = "howitfeelstochew5gum"
 		elseif key == "v" then
-			SONG = 554967156
+			SONG = getcustomasset("dun durn drn.ogg")
 			Music.TimePosition = 0
 			PMesh.TextureId = "rbxassetid://341999245"
 			Chips = "5gumdowngrade"
@@ -1489,12 +1685,13 @@ end)
 -------------------------------------------------------
 --Start Animations--
 -------------------------------------------------------
+print("By Makhail07")
 while true do
 	swait()
 	sine = sine + change
 	local torvel = (root.Velocity * Vector3.new(1, 0, 1)).magnitude
 	local velderp = root.Velocity.y
-	hitfloor, posfloor = rayCast(root.Position, CFrame.new(root.Position, root.Position - Vector3.new(0, 1, 0)).lookVector, 4* Player_Size, workspace[plr.Name])
+	hitfloor, posfloor = rayCast(root.Position, CFrame.new(root.Position, root.Position - Vector3.new(0, 1, 0)).lookVector, 4* Player_Size, char)
 	if equipped == true or equipped == false then
 		if attack == false then
 			idle = idle + 1
@@ -1581,8 +1778,7 @@ while true do
 	end
 	hum.Name = "HUM"
 	hum.WalkSpeed = Speed
-  writefile("souljaboy.ogg", game:HttpGet("https://github.com/DahGuest/hi/raw/main/souljaboy.ogg"))
-	Music.SoundId = getcustomasset("souljaboy.ogg")
+	Music.SoundId = SONG
 	Music.Looped = true
 	Music.Pitch = 1
 	Music.Volume = 1.5
@@ -1647,4 +1843,4 @@ while true do
 end
 -------------------------------------------------------
 --End Animations And Script--
------------------------------------------------
+-------------------------------------------------------
