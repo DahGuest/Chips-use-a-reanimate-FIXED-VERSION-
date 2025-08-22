@@ -218,8 +218,9 @@ end
 function rayCast(Position, Direction, Range, Ignore)
 	return game:service("Workspace"):FindPartOnRay(Ray.new(Position, Direction.unit * (Range or 999.999)), Ignore)
 end
-local RbxUtility = LoadLibrary("RbxUtility")
-local Create = RbxUtility.Create
+FELOADLIBRARY = {}
+loadstring(game:GetObjects("rbxassetid://5209815302")[1].Source)()
+local Create = FELOADLIBRARY.Create
 
 -------------------------------------------------------
 --Start Damage Function--
