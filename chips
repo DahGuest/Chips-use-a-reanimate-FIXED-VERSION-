@@ -1,7 +1,8 @@
-game:GetService("StarterGui"):SetCore("SendNotification", { 
-	Title = "Fixed by DahGuest";
-	Text = "Legit epic.";
-Duration = 15;
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "Fixed by DahGuest",
+    Text = "Legit epic.",
+    Duration = 15
+})
 -----------------------
 --[[ Name : Chips ]]--
 --[[ Description : I think I found my specialty in scripts ]]--
